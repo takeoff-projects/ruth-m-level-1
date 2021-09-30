@@ -48,8 +48,7 @@ func main() {
 }
 
 func indexHandler(w http.ResponseWriter, r *http.Request) {
-	//var events = eventsdb.GetEvents()
-	resp, err := http.Get("https://events-api-ex7otr565q-uc.a.run.app/events")
+	resp, err := http.Get(os.Getenv("EVENTS_API_URL") + "/events")
 	events := []Event{}
 	if err != nil {
 	    log.Println(err.Error())
@@ -125,11 +124,10 @@ func addHandler(w http.ResponseWriter, r *http.Request) {
 		}
 		eventBody, _ := json.Marshal(event)
 		requestBody := bytes.NewBuffer(eventBody)
-		_, err := http.Post("https://events-api-ex7otr565q-uc.a.run.app/events", "application/json", requestBody)
+		_, err := http.Post(os.Getenv("EVENTS_API_URL") + "/events", "application/json", requestBody)
 		if err != nil {
 		    log.Println(err.Error())
 		}
-		//eventsdb.AddEvent(event)
 
 		// Go back to home page
 		http.Redirect(w, r, "/", http.StatusFound)
@@ -139,9 +137,8 @@ func addHandler(w http.ResponseWriter, r *http.Request) {
 func editHandler(w http.ResponseWriter, r *http.Request) {
 	if r.Method == http.MethodGet {
 		log.Println("Edit Handler")
-		//event, error := eventsdb.GetEventbyID(mux.Vars(r)["id"])
 		id := mux.Vars(r)["id"]
-	    resp, err := http.Get("https://events-api-ex7otr565q-uc.a.run.app/events/" + id)
+	    resp, err := http.Get(os.Getenv("EVENTS_API_URL") + "/events/" + id)
 	    event := Event{}
 	    if err != nil {
 	        log.Println(err.Error())
@@ -179,7 +176,7 @@ func editHandler(w http.ResponseWriter, r *http.Request) {
 		eventBody, _ := json.Marshal(event)
    		requestBody := bytes.NewBuffer(eventBody)
    		client := &http.Client{}
-     	req, err := http.NewRequest("PUT", "https://events-api-ex7otr565q-uc.a.run.app/events/"+ event.Name, requestBody)
+     	req, err := http.NewRequest("PUT", os.Getenv("EVENTS_API_URL") + "/events/" + event.Name, requestBody)
    		if err != nil {
             log.Println(err.Error())
        	}
@@ -187,7 +184,6 @@ func editHandler(w http.ResponseWriter, r *http.Request) {
        	if err != nil {
        	    log.Println(err.Error())
        	}
-		//eventsdb.UpdateEvent(event)
 		log.Println("Event Updated")
 
 		// Go back to home page
@@ -196,10 +192,9 @@ func editHandler(w http.ResponseWriter, r *http.Request) {
 }
 
 func deleteHandler(w http.ResponseWriter, r *http.Request) {
-	//eventsdb.DeleteEvent(mux.Vars(r)["id"])
 	id := mux.Vars(r)["id"]
 	client := &http.Client{}
-	req, err := http.NewRequest("DELETE", "https://events-api-ex7otr565q-uc.a.run.app/events/" + id, nil)
+	req, err := http.NewRequest("DELETE", os.Getenv("EVENTS_API_URL") + "/events/" + id, nil)
 	if err != nil {
 	    log.Println(err.Error())
 	}
